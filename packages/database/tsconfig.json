@@ -1,0 +1,15 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    "composite": true,
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo"
+  },
+
+  "include": ["src", "prisma", "src/generated"],
+  "exclude": ["dist", "node_modules"]
+}
