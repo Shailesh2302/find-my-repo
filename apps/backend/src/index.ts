@@ -2,26 +2,26 @@ import "dotenv/config";
 import express, { Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-// import authRoutes from "./modules/auth/auth.routes";
+import authRoutes from "./modules/auth/auth.routes";
 import userRoutes from "./modules/user/user.routes";
 
 // Environment validation
-// const requiredEnvVars = [
-//   "DATABASE_URL",
-//   "GITHUB_CLIENT_ID",
-//   "GITHUB_CLIENT_SECRET",
-//   "GITHUB_REDIRECT_URI",
-// ] as const;
+const requiredEnvVars = [
+  "DATABASE_URL",
+  "GITHUB_CLIENT_ID",
+  "GITHUB_CLIENT_SECRET",
+  "GITHUB_REDIRECT_URI",
+] as const;
 
-// for (const envVar of requiredEnvVars) {
-//   if (!process.env[envVar]) {
-//     throw new Error(`Missing required environment variable: ${envVar}`);
-//   }
-// }
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    throw new Error(`Missing required environment variable: ${envVar}`);
+  }
+}
 
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
-// const NODE_ENV = process.env.NODE_ENV || "development";
+const NODE_ENV = process.env.NODE_ENV || "development";
 
 // Middleware
 app.use(express.json({ limit: "10mb" }));
@@ -35,15 +35,15 @@ app.use(
 );
 
 // Request logging (development only)
-// if (NODE_ENV === "development") {
-//   app.use((req, _res, next) => {
-//     console.log(`${req.method} ${req.path}`);
-//     next();
-//   });
-// }
+if (NODE_ENV === "development") {
+  app.use((req, _res, next) => {
+    console.log(`${req.method} ${req.path}`);
+    next();
+  });
+}
 
 // Routes
-// app.use("/auth", authRoutes);
+app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 
 // Health check
@@ -51,7 +51,7 @@ app.get("/health", (_req, res) => {
   res.json({
     status: "ok",
     timestamp: new Date().toISOString(),
-    // environment: NODE_ENV,
+    environment: NODE_ENV,
   });
 });
 
@@ -61,12 +61,12 @@ app.use((_req, res) => {
 });
 
 // Error handler
-// app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-//   console.error("Error:", err);
-//   res.status(500).json({
-//     error: NODE_ENV === "production" ? "Internal server error" : err.message,
-//   });
-// });
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  console.error("Error:", err);
+  res.status(500).json({
+    error: NODE_ENV === "production" ? "Internal server error" : err.message,
+  });
+});
 
 // Graceful shutdown
 process.on("SIGTERM", () => {
@@ -77,5 +77,5 @@ process.on("SIGTERM", () => {
 // Start server
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
-  // console.log(`📦 Environment: ${NODE_ENV}`);
+  console.log(`📦 Environment: ${NODE_ENV}`);
 });
