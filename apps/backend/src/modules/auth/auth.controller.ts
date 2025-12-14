@@ -7,8 +7,14 @@ export class AuthController {
    * GET /auth/github
    -------------------------- */
   githubLogin = (req: Request, res: Response) => {
-    const { url } = authService.generateGithubAuthUrl();
-    res.redirect(url);
+    const { url, state } = authService.generateGithubAuthUrl();
+    res.cookie("github_oauth_state", state, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+    });
+    res.redirect(url.toString());
   };
 
   /* --------------------------
@@ -81,8 +87,8 @@ export class AuthController {
 
     const token: string | undefined = auth.split(" ")[1];
 
-    if(!token){
-        return res.json({message:"token is undefined"})
+    if (!token) {
+      return res.json({ message: "token is undefined" });
     }
 
     try {
@@ -96,7 +102,7 @@ export class AuthController {
   };
 
   /* --------------------------
-   * POST /auth/logout
+   * POST /auth/logout  
    -------------------------- */
   logout = async (req: Request, res: Response) => {
     res.clearCookie("refresh_token", {

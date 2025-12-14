@@ -5,8 +5,10 @@ import "dotenv/config";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import crypto from "crypto";
+// import crypto from "crypto";
 import { prisma } from "@repo/db"; // make sure @repo/db exports `prisma: PrismaClient`
+import { generateState } from "arctic";
+import { github } from "../../lib/oauth/github";
 
 /* ---------------------------
  * Validate required env vars
@@ -47,15 +49,18 @@ export class AuthService {
    * Step 1: Redirect URL to GitHub
    ---------------------------------------- */
   generateGithubAuthUrl() {
-    const state = crypto.randomBytes(8).toString("hex");
-    const scope = "read:user user:email";
+    const state = generateState();
 
-    const url =
-      `https://github.com/login/oauth/authorize` +
-      `?client_id=${encodeURIComponent(GITHUB_CLIENT_ID!)}` +
-      `&redirect_uri=${encodeURIComponent(GITHUB_REDIRECT_URI!)}` +
-      `&scope=${encodeURIComponent(scope)}` +
-      `&state=${state}`;
+    const scopes = ["read:user", "user:email"];
+
+    // const url =
+    //   `https://github.com/login/oauth/authorize` +
+    //   `?client_id=${encodeURIComponent(GITHUB_CLIENT_ID!)}` +
+    //   `&redirect_uri=${encodeURIComponent(GITHUB_REDIRECT_URI!)}` +
+    //   `&scope=${encodeURIComponent(scope)}` +
+    //   `&state=${state}`;
+
+    const url = github.createAuthorizationURL(state, scopes);
 
     return { url, state };
   }
@@ -63,25 +68,13 @@ export class AuthService {
   /* ----------------------------------------
    * Step 2: GitHub Callback → Token exchange
    ---------------------------------------- */
-  async exchangeGithubCodeForToken(code: string) {
-    const res = await axios.post(
-      "https://github.com/login/oauth/access_token",
-      {
-        client_id: GITHUB_CLIENT_ID,
-        client_secret: GITHUB_CLIENT_SECRET,
-        code,
-        redirect_uri: GITHUB_REDIRECT_URI,
-      },
-      { headers: { Accept: "application/json" } }
-    );
-
-    if (res.data.error) {
-      throw new Error(
-        `GitHub token error: ${res.data.error_description ?? res.data.error}`
-      );
+  async exchangeGithubCodeForToken(code: string): Promise<string> {
+    try {
+      const tokens = await github.validateAuthorizationCode(code);
+      return tokens.accessToken();
+    } catch (err) {
+      throw new Error("GitHub OAuth token exchange failed");
     }
-
-    return res.data.access_token as string;
   }
 
   /* ----------------------------------------
