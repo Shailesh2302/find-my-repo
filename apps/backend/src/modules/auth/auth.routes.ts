@@ -9,10 +9,10 @@ import {
 
 const router: Router = Router();
 
-router.get("/auth/github", githubLogin);
-router.get("/auth/github/callback", githubCallback);
-router.post("/auth/refresh", refresh);
-router.get("/auth/me", me);
-router.post("/auth/logout", logout);
+router.get("/github", githubLogin);
+router.get("/github/callback", githubCallback);
+router.post("/refresh", refresh);
+router.get("/me", me);
+router.post("/logout", logout);
 
 export default router;

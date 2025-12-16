@@ -38,6 +38,9 @@ export async function githubCallback(req: Request, res: Response) {
   const { code, state } = req.query as Query;
   const { github_oauth_state: storedState } = req.cookies;
 
+  // console.log(state);
+  // console.log(storedState);
+
   if (!state || !storedState || state !== storedState) {
     return handleFailedLogin(req, res);
   }
