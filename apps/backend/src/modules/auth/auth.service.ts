@@ -76,20 +76,40 @@ export async function fetchGithubUser(
  * Step 4: Upsert user
  ---------------------------------------- */
 export async function upsertUser(data: GithubProfile) {
-  return prisma.user.upsert({
-    where: { github_id: data.github_id },
-    update: {
-      email: data.email,
-      username: data.username,
-      avatar_url: data.avatar_url ?? undefined,
-      last_login_at: new Date(),
+  const provider = await prisma.provider.findUnique({
+    where: {
+      provider_providerUserId: {
+        provider: "GITHUB",
+        providerUserId: data.github_id,
+      },
     },
-    create: {
-      github_id: data.github_id,
+    include: { user: true },
+  });
+
+  if (provider) {
+    return prisma.user.update({
+      where: { id: provider.userId },
+      data: {
+        email: data.email,
+        username: data.username,
+        avatar_url: data.avatar_url ?? undefined,
+        last_login_at: new Date(),
+      },
+    });
+  }
+
+  return prisma.user.create({
+    data: {
       email: data.email,
       username: data.username,
       avatar_url: data.avatar_url ?? undefined,
       last_login_at: new Date(),
+      providers: {
+        create: {
+          provider: "GITHUB",
+          providerUserId: data.github_id,
+        },
+      },
     },
   });
 }

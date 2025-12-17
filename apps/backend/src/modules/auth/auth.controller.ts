@@ -55,6 +55,7 @@ export async function githubCallback(req: Request, res: Response) {
     }
 
     const ghUser = await fetchGithubUser(githubAccessToken);
+
     const user = await upsertUser(ghUser);
 
     const { refreshToken } = await issueTokensForUser(user.id);
