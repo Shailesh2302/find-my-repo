@@ -3,63 +3,52 @@ import { handleFailedLogin } from "../../handler/loginErrorHandler";
 import {
   exchangeGithubCodeForToken,
   fetchGithubUser,
-  fetchUserRepos,
   generateGithubAuthUrl,
   getUserFromAccessToken,
   issueTokensForUser,
   refreshTokens,
-  upsertRepos,
-  upsertUser,
   upsertUserAndRepoToDB,
-} from "./auth.service";
-import { mapGithubRepo } from "./repo.mapper";
+} from "./authService";
 
 type Query = {
   code: string;
   state: string;
 };
 
-/* --------------------------
- * GET /auth/github
- -------------------------- */
 export function githubLogin(req: Request, res: Response) {
   const { url, state } = generateGithubAuthUrl();
 
+  const isProd = process.env.NODE_ENV === "production";
+
   res.cookie("github_oauth_state", state, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
     maxAge: 1000 * 60 * 60 * 24 * 30,
   });
 
   res.redirect(url.toString());
 }
 
-/* --------------------------
- * GET /auth/github/callback
- -------------------------- */
+// authController.ts - githubCallback function
 export async function githubCallback(req: Request, res: Response) {
   const { code, state } = req.query as Query;
   const { github_oauth_state: storedState } = req.cookies;
 
-  // console.log(state);
-  // console.log(storedState);
-
   if (!state || !storedState || state !== storedState) {
     return handleFailedLogin(req, res);
   }
-  let githubAccessToken;
+
   try {
     res.clearCookie("github_oauth_state");
 
-    githubAccessToken = await exchangeGithubCodeForToken(code);
+    const githubAccessToken = await exchangeGithubCodeForToken(code);
 
     if (!githubAccessToken || githubAccessToken.length == 0) {
       return handleFailedLogin(req, res);
     }
 
     const ghUser = await fetchGithubUser(githubAccessToken);
-
     const { user, message } = await upsertUserAndRepoToDB(
       ghUser,
       githubAccessToken
@@ -69,28 +58,35 @@ export async function githubCallback(req: Request, res: Response) {
       throw new Error("Failed to upsert user and repos to database");
     }
 
-    const { refreshToken } = await issueTokensForUser(user.id);
+    // ✅ Get BOTH tokens
+    const { accessToken, refreshToken } = await issueTokensForUser(user.id);
+
+    console.log("refreshToken: ", refreshToken);
+    console.log("accessToken: ", accessToken); // Add this log
+
+    const isProd = process.env.NODE_ENV === "production";
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24 * 30,
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
       path: "/",
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
     });
 
-    return res.redirect(`${process.env.FRONTEND_URL}/auth/success`);
+    // ✅ IMPORTANT: Pass accessToken in the redirect URL
+    return res.redirect(
+      `${process.env.FRONTEND_URL}/auth/success?token=${accessToken}`
+    );
   } catch (e) {
     console.error(e);
     return res.status(500).json({ error: "OAuth Failed" });
   }
 }
 
-/* --------------------------
- * POST /auth/refresh
- -------------------------- */
 export async function refresh(req: Request, res: Response) {
   const token = req.cookies.refresh_token;
+
   if (!token) return res.status(401).json({ error: "Missing refresh token" });
 
   try {
@@ -98,9 +94,8 @@ export async function refresh(req: Request, res: Response) {
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
       sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24 * 30,
       path: "/",
     });
 
@@ -110,9 +105,6 @@ export async function refresh(req: Request, res: Response) {
   }
 }
 
-/* --------------------------
- * GET /auth/me
- -------------------------- */
 export async function me(req: Request, res: Response) {
   const auth = req.headers.authorization;
   if (!auth?.startsWith("Bearer "))
@@ -133,9 +125,6 @@ export async function me(req: Request, res: Response) {
   }
 }
 
-/* --------------------------
- * POST /auth/logout
- -------------------------- */
 export async function logout(req: Request, res: Response) {
   res.clearCookie("refresh_token", {
     path: "/",
@@ -144,4 +133,19 @@ export async function logout(req: Request, res: Response) {
   });
 
   res.json({ ok: true });
+}
+
+export async function getToken(req: Request, res: Response) {
+  const token1 = req.cookies.refresh_token;
+  const headerAccessToken = req.headers.accessToken;
+  const cookieAccessToken = req.cookies.accessToken;
+  const token2 = req.headers.authorization;
+  console.log("token 1 : ", token1);
+  console.log("cookieAccessToken : ", cookieAccessToken);
+  console.log("headerAccessToken : ", headerAccessToken);
+
+  console.log("token 2 : ", token2);
+  const token3 = token2?.split(" ")[1];
+  console.log("token 3 : ", token3);
+  return res.json({ token1: token1, token2: token2, token3: token3 });
 }

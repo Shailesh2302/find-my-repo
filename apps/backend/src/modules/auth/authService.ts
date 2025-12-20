@@ -10,19 +10,14 @@ import { github } from "../../lib/oauth/github";
 import { assertEnv } from "../../config/env";
 import { GithubProfile, UserRepos } from "../../types/githubType";
 import { signAccessToken, signRefreshToken } from "../../utils/jwt";
-import { mapGithubRepo } from "./repo.mapper";
+import { mapGithubRepo } from "./repoMapper";
+import { encrypt } from "../../utils/crypto";
 
-/* ---------------------------
- * Validate required env vars
- * -------------------------- */
 const { JWT_ACCESS_TOKEN_SECRET, JWT_REFRESH_TOKEN_SECRET } = process.env;
 
 assertEnv("JWT_ACCESS_TOKEN_SECRET", JWT_ACCESS_TOKEN_SECRET);
 assertEnv("JWT_REFRESH_TOKEN_SECRET", JWT_REFRESH_TOKEN_SECRET);
 
-/* ----------------------------------------
- * Step 1: Redirect URL to GitHub
- ---------------------------------------- */
 export function generateGithubAuthUrl() {
   const state = generateState();
   const scopes = ["read:user", "user:email"];
@@ -30,9 +25,6 @@ export function generateGithubAuthUrl() {
   return { url, state };
 }
 
-/* ----------------------------------------
- * Step 2: GitHub Callback → Token exchange
- ---------------------------------------- */
 export async function exchangeGithubCodeForToken(
   code: string
 ): Promise<string> {
@@ -44,9 +36,6 @@ export async function exchangeGithubCodeForToken(
   }
 }
 
-/* ----------------------------------------
- * Step 3: Get GitHub user profile
- ---------------------------------------- */
 export async function fetchGithubUser(
   githubAccessToken: string
 ): Promise<GithubProfile> {
@@ -140,10 +129,34 @@ export async function upsertRepos(data: UserRepos) {
   }
 }
 
-/* ----------------------------------------
- * Step 4: Upsert user
- ---------------------------------------- */
-export async function upsertUser(data: GithubProfile) {
+// export async function upsertToProvider(
+//   data: GithubProfile,
+//   githubAccessToken: string
+// ) {
+//   try {
+//     await prisma.provider.upsert({
+//       where: {
+//         provider_providerUserId: {
+//           provider: "GITHUB",
+//           providerUserId: data.github_id,
+//         },
+//       },
+//       update: {
+//         accessTokenEnc: encrypt(githubAccessToken),
+//       },
+//       create: {
+//         accessTokenEnc: encrypt(githubAccessToken),
+//       },
+//     });
+//   } catch (error) {}
+// }
+
+export async function upsertUser(
+  data: GithubProfile,
+  githubAccessToken: string
+) {
+  const encryptedToken = encrypt(githubAccessToken);
+
   const provider = await prisma.provider.findUnique({
     where: {
       provider_providerUserId: {
@@ -151,10 +164,16 @@ export async function upsertUser(data: GithubProfile) {
         providerUserId: data.github_id,
       },
     },
-    include: { user: true },
   });
 
   if (provider) {
+    await prisma.provider.update({
+      where: { id: provider.id },
+      data: {
+        accessTokenEnc: encryptedToken,
+      },
+    });
+
     return prisma.user.update({
       where: { id: provider.userId },
       data: {
@@ -172,10 +191,12 @@ export async function upsertUser(data: GithubProfile) {
       username: data.username,
       avatar_url: data.avatar_url ?? undefined,
       last_login_at: new Date(),
+
       providers: {
         create: {
           provider: "GITHUB",
           providerUserId: data.github_id,
+          accessTokenEnc: encryptedToken,
         },
       },
     },
@@ -191,9 +212,6 @@ export async function issueTokensForUser(userId: string) {
   return { accessToken, refreshToken };
 }
 
-/* ----------------------------------------
- * Refresh token storage (hashed)
- ---------------------------------------- */
 export async function storeRefreshToken(userId: string, token: string) {
   const hashed = await bcrypt.hash(token, 10);
 
@@ -220,9 +238,6 @@ export async function deleteRefreshToken(id: string) {
   return prisma.refreshToken.delete({ where: { id } });
 }
 
-/* ----------------------------------------
- * Refresh endpoint logic
- ---------------------------------------- */
 export async function refreshTokens(refreshToken: string) {
   const payload: any = jwt.verify(refreshToken, JWT_REFRESH_TOKEN_SECRET!);
 
@@ -239,9 +254,6 @@ export async function refreshTokens(refreshToken: string) {
   return { accessToken: newAccess, refreshToken: newRefresh };
 }
 
-/* ----------------------------------------
- * Get user from access token
- ---------------------------------------- */
 export async function getUserFromAccessToken(token: string) {
   const payload: any = jwt.verify(token, JWT_ACCESS_TOKEN_SECRET!);
 
@@ -250,23 +262,23 @@ export async function getUserFromAccessToken(token: string) {
   });
 }
 
-
-
 export async function upsertUserAndRepoToDB(
   ghUser: GithubProfile,
   githubAccessToken: string
 ) {
   try {
-    const user = await upsertUser(ghUser);
+    const user = await upsertUser(ghUser, githubAccessToken);
     const githubRepos = await fetchUserRepos(githubAccessToken);
     const mappedRepos = githubRepos.map((repo) => mapGithubRepo(repo, user.id));
     const upsertRepoToDB = await upsertRepos(mappedRepos);
+    // const upsertDataToProvider = await upsertToProvider(
+    //   ghUser,
+    //   githubAccessToken
+    // );
 
     return { user, message: "success" };
   } catch (error: any) {
-    throw new Error(
-      "error while upserting the user and repos to database",
-      error
-    );
+    console.error("REAL ERROR:", error);
+  throw error; 
   }
 }

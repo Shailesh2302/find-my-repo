@@ -2,8 +2,8 @@ import "dotenv/config";
 import express, { Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import authRoutes from "./modules/auth/auth.routes";
-import userRoutes from "./modules/user/user.routes";
+import authRoutes from "./modules/auth/authRoutes";
+import repoRouter from "./modules/repo/repoRoutes";
 
 // Environment validation
 const requiredEnvVars = [
@@ -27,6 +27,7 @@ const NODE_ENV = process.env.NODE_ENV || "development";
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:3001",
@@ -44,7 +45,7 @@ if (NODE_ENV === "development") {
 
 // Routes
 app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
+app.use("/repo", repoRouter);
 
 // Health check
 app.get("/health", (_req, res) => {

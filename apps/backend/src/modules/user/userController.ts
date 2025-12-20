@@ -9,7 +9,7 @@ const CreateUserSchema = z.object({
   email: z.string().email().optional(),
   avatar_url: z.string().optional(),
   display_name: z.string().optional(),
-  github_id: z.string(), // REQUIRED + unique
+  github_id: z.string(),
   profile_url: z.string().optional(),
   username: z.string().optional(),
 });
@@ -18,7 +18,7 @@ export async function createUser(req: Request, res: Response) {
   try {
     // Validate body
     const data = CreateUserSchema.parse(req.body);
-
+ 
     // Create user
     const user = await prisma.user.create({
       data: {

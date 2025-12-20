@@ -36,6 +36,7 @@ model Provider {
   id             String   @id @default(uuid())
   provider       ProviderName
   providerUserId String   
+  accessTokenEnc String?
   createdAt      DateTime @default(now())
 
   userId         String
