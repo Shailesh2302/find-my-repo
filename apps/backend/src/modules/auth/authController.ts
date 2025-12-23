@@ -30,7 +30,7 @@ export function githubLogin(req: Request, res: Response) {
   res.redirect(url.toString());
 }
 
-// authController.ts - githubCallback function
+
 export async function githubCallback(req: Request, res: Response) {
   const { code, state } = req.query as Query;
   const { github_oauth_state: storedState } = req.cookies;
@@ -58,7 +58,7 @@ export async function githubCallback(req: Request, res: Response) {
       throw new Error("Failed to upsert user and repos to database");
     }
 
-    // ✅ Get BOTH tokens
+   
     const { accessToken, refreshToken } = await issueTokensForUser(user.id);
 
     console.log("refreshToken: ", refreshToken);
@@ -74,7 +74,7 @@ export async function githubCallback(req: Request, res: Response) {
       maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
     });
 
-    // ✅ IMPORTANT: Pass accessToken in the redirect URL
+
     return res.redirect(
       `${process.env.FRONTEND_URL}/auth/success?token=${accessToken}`
     );
