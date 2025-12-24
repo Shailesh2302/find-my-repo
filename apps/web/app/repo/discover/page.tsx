@@ -64,14 +64,15 @@ export default function DiscoverPage() {
   // Extract languages from current page
   const languages = useMemo(() => {
     const set = new Set<string>();
-    repos.forEach(r => r.primaryLanguage?.name && set.add(r.primaryLanguage.name));
+    repos.forEach(
+      (r) => r.primaryLanguage?.name && set.add(r.primaryLanguage.name)
+    );
     return Array.from(set).sort();
   }, [repos]);
 
   return (
     <div className="min-h-screen bg-[#0b0f14] text-white">
       <div className="max-w-7xl mx-auto px-6 py-10">
-
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-semibold">Discover Repositories</h1>
@@ -82,12 +83,16 @@ export default function DiscoverPage() {
         <div className="sticky top-0 z-10 bg-[#0b0f14] border border-white/10 rounded-lg p-4 mb-6 flex flex-wrap gap-4">
           <select
             value={language}
-            onChange={e => setLanguage(e.target.value)}
+            onChange={(e) => setLanguage(e.target.value)}
             className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm"
           >
-            <option value="all">All languages</option>
-            {languages.map(lang => (
-              <option key={lang} value={lang}>{lang}</option>
+            <option className="bg-blue-950" value="all">
+              All languages
+            </option>
+            {languages.map((lang) => (
+              <option key={lang} value={lang}>
+                {lang}
+              </option>
             ))}
           </select>
 
@@ -96,7 +101,7 @@ export default function DiscoverPage() {
             placeholder="Min stars"
             className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm w-32"
             value={minStars}
-            onChange={e => setMinStars(Number(e.target.value))}
+            onChange={(e) => setMinStars(Number(e.target.value))}
           />
 
           <input
@@ -104,7 +109,7 @@ export default function DiscoverPage() {
             placeholder="Min forks"
             className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm w-32"
             value={minForks}
-            onChange={e => setMinForks(Number(e.target.value))}
+            onChange={(e) => setMinForks(Number(e.target.value))}
           />
 
           <input
@@ -112,7 +117,7 @@ export default function DiscoverPage() {
             placeholder="Min issues"
             className="bg-white/5 border border-white/10 rounded px-3 py-2 text-sm w-32"
             value={minIssues}
-            onChange={e => setMinIssues(Number(e.target.value))}
+            onChange={(e) => setMinIssues(Number(e.target.value))}
           />
         </div>
 
@@ -133,7 +138,7 @@ export default function DiscoverPage() {
           <p className="py-12 text-white/60">No repositories found</p>
         ) : (
           <div className="divide-y divide-white/5">
-            {repos.map(repo => (
+            {repos.map((repo) => (
               <a
                 key={repo.id}
                 href={repo.url}
@@ -167,19 +172,17 @@ export default function DiscoverPage() {
         <div className="flex items-center justify-between mt-8">
           <button
             disabled={page === 1}
-            onClick={() => setPage(p => p - 1)}
+            onClick={() => setPage((p) => p - 1)}
             className="px-4 py-2 text-sm rounded border border-white/10 disabled:opacity-40"
           >
             ← Previous
           </button>
 
-          <span className="text-sm text-white/60">
-            Page {page}
-          </span>
+          <span className="text-sm text-white/60">Page {page}</span>
 
           <button
             disabled={!hasNextPage}
-            onClick={() => setPage(p => p + 1)}
+            onClick={() => setPage((p) => p + 1)}
             className="px-4 py-2 text-sm rounded border border-white/10 disabled:opacity-40"
           >
             Next →
