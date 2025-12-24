@@ -15,7 +15,7 @@ export default function Page() {
         const data = await res.json();
 
         console.log(data);
-        // ✅ IMPORTANT FIX
+
         setRepos(Array.isArray(data) ? data : (data.repos ?? []));
       } catch (err) {
         setError("Failed to load repos");

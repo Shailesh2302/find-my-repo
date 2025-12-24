@@ -1,23 +1,10 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import AuthSuccessContent from "./AuthSuccessContent";
 
 export default function AuthSuccessPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const token = searchParams.get("token");
-
-    if (!token) {
-      router.replace("/login?error=no_token");
-      return;
-    }
-
-    localStorage.setItem("access_token", token);
-    router.replace("/");
-  }, [router, searchParams]);
-
-  return <p>Signing you in...</p>;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AuthSuccessContent />
+    </Suspense>
+  );
 }
