@@ -7,7 +7,7 @@ esbuild.build({
   platform: 'node',
   format: 'esm',
   target: 'node22',
-  packages: 'external', // Don't bundle node_modules
+  packages: 'external', 
   // Or be selective:
   // external: ['dotenv', '@repo/db', '@prisma/client'],
   banner: {
