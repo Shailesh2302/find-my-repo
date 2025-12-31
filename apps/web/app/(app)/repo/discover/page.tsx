@@ -22,7 +22,7 @@ export default function DiscoverPage() {
   const [draft, setDraft] = useState(filters);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
 
-  /* ---------------- LOAD REPOS ---------------- */
+
   async function loadRepos(next = false) {
     setLoading(true);
 
@@ -41,7 +41,7 @@ export default function DiscoverPage() {
     loadRepos(false);
   }, []);
 
-  /* ---------------- MAJOR TOPICS ---------------- */
+
   const majorTopics = useMemo(() => {
     const counts: Record<string, number> = {};
 
@@ -52,12 +52,12 @@ export default function DiscoverPage() {
     });
 
     return Object.entries(counts)
-      .sort((a, b) => b[1] - a[1]) // most used first
+      .sort((a, b) => b[1] - a[1])
       .slice(0, MAJOR_TOPIC_LIMIT)
       .map(([topic]) => topic);
   }, [repos]);
 
-  /* ---------------- LANGUAGES ---------------- */
+
   const languages = useMemo(() => {
     return Array.from(
       new Set(
@@ -68,7 +68,7 @@ export default function DiscoverPage() {
     ).sort();
   }, [repos]);
 
-  /* ---------------- FILTERED REPOS ---------------- */
+
   const filteredRepos = useMemo(() => {
     return repos.filter((r) => {
       if (filters.language !== "all" && r.primary_language !== filters.language)
@@ -89,10 +89,22 @@ export default function DiscoverPage() {
     });
   }, [repos, filters, selectedTopics]);
 
+
+  if (loading && repos.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0b0f14] text-white">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+          <p className="text-sm text-white/60">Loading repositories…</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0b0f14] text-white">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* HEADER */}
+ 
         <div className="mb-6">
           <h1 className="text-2xl font-semibold">Discover repositories</h1>
           <p className="text-sm text-white/50">
@@ -100,7 +112,7 @@ export default function DiscoverPage() {
           </p>
         </div>
 
-        {/* FILTER BAR */}
+
         <div className="mb-6 space-y-3 bg-white/5 border border-white/10 rounded-lg px-3 py-3">
           <div className="flex flex-wrap gap-2 items-center">
             <select
@@ -154,7 +166,7 @@ export default function DiscoverPage() {
             </button>
           </div>
 
-          {/* MAJOR TOPICS */}
+
           <div className="flex flex-wrap gap-2">
             {majorTopics.map((topic) => {
               const active = selectedTopics.includes(topic);
@@ -181,7 +193,7 @@ export default function DiscoverPage() {
           </div>
         </div>
 
-        {/* TABLE HEADER */}
+
         <div className="grid grid-cols-12 gap-3 text-xs text-white/50 border-b border-white/10 pb-2">
           <div className="col-span-5">Repository</div>
           <div className="col-span-2">Language</div>
@@ -191,7 +203,7 @@ export default function DiscoverPage() {
           <div className="col-span-2">Updated</div>
         </div>
 
-        {/* ROWS */}
+
         <div className="divide-y divide-white/5">
           {filteredRepos.map((r) => (
             <a
@@ -209,7 +221,6 @@ export default function DiscoverPage() {
                   {r.description ?? "No description"}
                 </div>
 
-                {/* TOPICS */}
                 <div className="flex flex-wrap gap-1 mt-1">
                   {r.topics?.slice(0, 4).map((t) => (
                     <span
@@ -230,17 +241,15 @@ export default function DiscoverPage() {
               <div className="col-span-2 text-sm">
                 {r.primary_language ?? "—"}
               </div>
-
               <div className="col-span-1 text-sm">
                 {r.stars_count.toLocaleString()}
               </div>
-
               <div className="col-span-1 text-sm">
                 {r.forks_count.toLocaleString()}
               </div>
-
-              <div className="col-span-1 text-sm">{r.open_issues_count}</div>
-
+              <div className="col-span-1 text-sm">
+                {r.open_issues_count}
+              </div>
               <div className="col-span-2 text-xs text-white/50">
                 {new Date(r.last_pushed_at).toLocaleDateString()}
               </div>
@@ -248,7 +257,6 @@ export default function DiscoverPage() {
           ))}
         </div>
 
-        {/* LOAD MORE */}
         {hasNextPage && (
           <div className="flex justify-center mt-8">
             <button

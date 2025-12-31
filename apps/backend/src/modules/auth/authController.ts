@@ -9,6 +9,7 @@ import {
   refreshTokens,
   upsertUserAndRepoToDB,
 } from "./authService";
+import { AppError } from "../../utils/AppError";
 
 type Query = {
   code: string;
@@ -16,20 +17,35 @@ type Query = {
 };
 
 export function githubLogin(req: Request, res: Response) {
-  const { url, state } = generateGithubAuthUrl();
+  try {
+    const { url, state } = generateGithubAuthUrl();
 
-  const isProd = process.env.NODE_ENV === "production";
+    if (!url || !state) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to generate GitHub OAuth URL",
+      });
+    }
 
-  res.cookie("github_oauth_state", state, {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? "none" : "lax",
-    maxAge: 1000 * 60 * 60 * 24 * 30,
-  });
+    const isProd = process.env.NODE_ENV === "production";
 
-  res.redirect(url.toString());
+    res.cookie("github_oauth_state", state, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+    });
+
+    return res.redirect(302, url.toString());
+  } catch (error) {
+    console.error("GitHub OAuth login error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "GitHub authentication initialization failed",
+    });
+  }
 }
-
 
 export async function githubCallback(req: Request, res: Response) {
   const { code, state } = req.query as Query;
@@ -55,17 +71,15 @@ export async function githubCallback(req: Request, res: Response) {
     );
 
     if (message !== "success") {
-      throw new Error("Failed to upsert user and repos to database");
+      throw new AppError("Failed to upsert user and repos to database", 401);
     }
 
-   
     const { accessToken, refreshToken } = await issueTokensForUser(user.id);
 
     // console.log("refreshToken: ", refreshToken);
     // console.log("accessToken: ", accessToken); // Add this log
 
     const isProd = process.env.NODE_ENV === "production";
-
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
@@ -75,12 +89,12 @@ export async function githubCallback(req: Request, res: Response) {
       maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
     });
 
-
     return res.redirect(
       `${process.env.FRONTEND_URL}/auth/success?token=${accessToken}`
     );
   } catch (e) {
     console.error(e);
+    throw new AppError("OAuth failed",401)
     return res.status(500).json({ error: "OAuth Failed" });
   }
 }

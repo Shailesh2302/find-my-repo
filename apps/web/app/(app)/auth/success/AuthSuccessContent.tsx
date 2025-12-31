@@ -24,7 +24,7 @@ export default function AuthSuccessContent() {
 
     // Redirect to dashboard
     setTimeout(() => {
-      router.push("/");
+      router.push("/repo");
     }, 2000);
   }, [searchParams, router]);
 
