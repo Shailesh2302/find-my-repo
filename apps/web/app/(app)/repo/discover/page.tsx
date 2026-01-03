@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Repo } from "../../../../types/repoTypes";
-import { axiosInstance } from "../../../../utils/axios";
+import { Repo } from "@/types/repoTypes";
+import { axiosInstance } from "@/utils/axios";
 
 const MAJOR_TOPIC_LIMIT = 12;
 
