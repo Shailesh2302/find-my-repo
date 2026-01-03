@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { fetchAPI } from "../../../../lib/api";
 import { Repo } from "../../../../types/repoTypes";
+import { axiosInstance } from "../../../../utils/axios";
 
 const MAJOR_TOPIC_LIMIT = 12;
 
@@ -22,14 +22,14 @@ export default function DiscoverPage() {
   const [draft, setDraft] = useState(filters);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
 
-
   async function loadRepos(next = false) {
     setLoading(true);
 
-    const res = await fetchAPI(
+    const res = await axiosInstance.get(
       `/repo/discover${next && cursor ? `?cursor=${cursor}` : ""}`
     );
-    const data = await res.json();
+
+    const data = res.data;
 
     setRepos(next ? [...repos, ...data.repos] : data.repos);
     setCursor(data.nextCursor ?? null);
@@ -40,7 +40,6 @@ export default function DiscoverPage() {
   useEffect(() => {
     loadRepos(false);
   }, []);
-
 
   const majorTopics = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -57,7 +56,6 @@ export default function DiscoverPage() {
       .map(([topic]) => topic);
   }, [repos]);
 
-
   const languages = useMemo(() => {
     return Array.from(
       new Set(
@@ -67,7 +65,6 @@ export default function DiscoverPage() {
       )
     ).sort();
   }, [repos]);
-
 
   const filteredRepos = useMemo(() => {
     return repos.filter((r) => {
@@ -89,7 +86,6 @@ export default function DiscoverPage() {
     });
   }, [repos, filters, selectedTopics]);
 
-
   if (loading && repos.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0b0f14] text-white">
@@ -104,14 +100,12 @@ export default function DiscoverPage() {
   return (
     <div className="min-h-screen bg-[#0b0f14] text-white">
       <div className="max-w-7xl mx-auto px-4 py-8">
- 
         <div className="mb-6">
           <h1 className="text-2xl font-semibold">Discover repositories</h1>
           <p className="text-sm text-white/50">
             Popular open source projects by topic
           </p>
         </div>
-
 
         <div className="mb-6 space-y-3 bg-white/5 border border-white/10 rounded-lg px-3 py-3">
           <div className="flex flex-wrap gap-2 items-center">
@@ -166,7 +160,6 @@ export default function DiscoverPage() {
             </button>
           </div>
 
-
           <div className="flex flex-wrap gap-2">
             {majorTopics.map((topic) => {
               const active = selectedTopics.includes(topic);
@@ -193,7 +186,6 @@ export default function DiscoverPage() {
           </div>
         </div>
 
-
         <div className="grid grid-cols-12 gap-3 text-xs text-white/50 border-b border-white/10 pb-2">
           <div className="col-span-5">Repository</div>
           <div className="col-span-2">Language</div>
@@ -202,7 +194,6 @@ export default function DiscoverPage() {
           <div className="col-span-1">Issues</div>
           <div className="col-span-2">Updated</div>
         </div>
-
 
         <div className="divide-y divide-white/5">
           {filteredRepos.map((r) => (
@@ -247,9 +238,7 @@ export default function DiscoverPage() {
               <div className="col-span-1 text-sm">
                 {r.forks_count.toLocaleString()}
               </div>
-              <div className="col-span-1 text-sm">
-                {r.open_issues_count}
-              </div>
+              <div className="col-span-1 text-sm">{r.open_issues_count}</div>
               <div className="col-span-2 text-xs text-white/50">
                 {new Date(r.last_pushed_at).toLocaleDateString()}
               </div>

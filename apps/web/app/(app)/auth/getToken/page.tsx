@@ -1,24 +1,26 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { fetchAPI } from "../../../../lib/api";
+import { axiosInstance } from "../../../../utils/axios";
 
 const Page = () => {
-  const [token, setToken] = useState([]);
+  const [token, setToken] = useState<any[]>([]);
+
   useEffect(() => {
     const fetchTokens = async () => {
       try {
-        const token = await fetchAPI("/auth/getToken");
-        const data = await token.json();
-        console.log(data);
-        setToken(data);
-        return data;
+        const res = await axiosInstance.get("/auth/getToken");
+        console.log(res.data);
+        setToken(res.data);
+        return res.data;
       } catch (error) {
         console.log(error);
       }
     };
+
     fetchTokens();
   }, []);
+
   return <div>{token[0]}</div>;
 };
 
