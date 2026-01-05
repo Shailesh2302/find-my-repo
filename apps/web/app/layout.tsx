@@ -7,8 +7,8 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Find me Repo",
-  description: "Find you a repo to contribute!!!",
+  title: "ossbeat",
+  description: "Find your oss to contribute!!!",
 };
 
 export default function RootLayout({
