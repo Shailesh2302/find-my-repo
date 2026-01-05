@@ -1,11 +1,9 @@
-import { ModeToggle } from "@/components/web/theme-toggle";
+import { HeroSection } from "@/components/home/HeroSection";
 
 export default function HomePage() {
   return (
-    <>
-      <div className="flex justify-center items-center text-chart-5">hiiii</div>
-  
-      <ModeToggle />
-    </>
+    <div className="h-full">
+      <HeroSection />
+    </div>
   );
 }

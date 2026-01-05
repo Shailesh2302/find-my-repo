@@ -26,8 +26,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="flex min-w-screen md:bg-amber-800 sm:bg-yellow-300 lg:bg-blue-950">
-            <div className="container mx-20 bg-background">{children}</div>
+          <main className="min-h-screen w-full md:bg-amber-800 sm:bg-yellow-300 lg:bg-blue-950">
+            <div className="mx-auto lg:max-w-8xl md:max-w-7xl">{children}</div>
           </main>
         </ThemeProvider>
       </body>
