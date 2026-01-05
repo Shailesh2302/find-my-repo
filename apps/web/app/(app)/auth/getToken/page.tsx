@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { axiosInstance } from "@/utils/axios-auth";
+import { axiosAuthInstance } from "@/utils/axios-auth";
 
 const Page = () => {
   const [token, setToken] = useState<any[]>([]);
@@ -9,7 +9,7 @@ const Page = () => {
   useEffect(() => {
     const fetchTokens = async () => {
       try {
-        const res = await axiosInstance.get("/auth/getToken");
+        const res = await axiosAuthInstance.get("/auth/getToken");
         console.log(res.data);
         setToken(res.data);
         return res.data;
