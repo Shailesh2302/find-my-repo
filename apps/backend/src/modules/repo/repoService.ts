@@ -83,29 +83,22 @@ function buildSearchQuery({
   return parts.join(" ");
 }
 
-export async function discoverRepos(
-  // githubAccessToken: string,
-  params: {
-    perPage: number;
-    cursor?: string | null;
-    language?: string | undefined;
-    minStars?: number;
-    minForks?: number;
-    minIssues?: number;
-    topic?: string;
-  }
-) {
+export async function discoverRepos(params: {
+  perPage: number;
+  cursor?: string | null;
+  language?: string | undefined;
+  minStars?: number;
+  minForks?: number;
+  minIssues?: number;
+  topic?: string;
+}) {
   const searchQuery = buildSearchQuery(params);
 
-  const data = (await githubGraphqlRequest(
-    SEARCH_REPOS_QUERY,
-    {
-      query: searchQuery,
-      first: params.perPage,
-      after: params.cursor ?? null,
-    },
-    // githubAccessToken
-  )) as {
+  const data = (await githubGraphqlRequest(SEARCH_REPOS_QUERY, {
+    query: searchQuery,
+    first: params.perPage,
+    after: params.cursor ?? null,
+  })) as {
     search: {
       nodes: any[];
       pageInfo: { hasNextPage: boolean; endCursor: string | null };

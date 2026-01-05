@@ -1,12 +1,15 @@
 import "dotenv/config";
 import { createAppAuth } from "@octokit/auth-app";
-import fs from "fs";
-import path from "path";
+// import fs from "fs";
+// import path from "path";
 
-const privateKey = fs.readFileSync(
-  path.resolve(process.env.GITHUB_PRIVATE_KEY_PATH!),
-  "utf8"
-);
+// const privateKey = fs.readFileSync(
+//   path.resolve(process.env.GITHUB_PRIVATE_KEY_PATH!),
+//   "utf8"
+// );
+
+const privateKey = process.env.GITHUB_PRIVATE_KEY!.replace(/\\n/g, "\n");
+
 
 export async function getGithubAppToken() {
   const auth = createAppAuth({
