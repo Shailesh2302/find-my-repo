@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import OnButton from "../web/Button";
 import OpenSourceJourneyChart from "./OpenSourceJourneyChart";
 import RunningDog from "./RunningDog";
+import Navbar from "./Navbar";
 
 export const HeroSection = () => {
   const [loading, setLoading] = useState(false);
@@ -18,6 +19,7 @@ export const HeroSection = () => {
       className="flex items-start justify-center min-h-screen
       bg-linear-to-b from-foreground from-30% via-gray-500 via-50% to-background to-75%"
     >
+      <Navbar/> 
       <main className="w-full">
         <div className="flex flex-col pt-40 gap-6 justify-center items-center">
           <h1 className="text-background text-4xl  text-shadow-2xs md:text-5xl lg:text-6xl font-extrabold text-center">

@@ -59,35 +59,35 @@ model RefreshToken {
 }
 
 model Repository {
-  id                String             @id @unique @default(uuid())
-  github_repo_id    String             @unique
-  owner_login       String  
-  owner_id          Int    
+  id                String   @id @default(uuid())
+  github_repo_id    String   @unique
+  owner_login       String
+  owner_id          Int
   owner_profile_url String
   name              String
-  full_name         String             @unique
+  full_name         String   @unique
   html_url          String
   description       String?
   primary_language  String?
-  stars_count       Int?               @default(0)
-  forks_count       Int?               @default(0)
-  open_issues_count Int?               @default(0)
-  topics            String[]           @default([]) 
-  is_fork           Boolean            @default(false)
-  is_private        Boolean            @default(false)
+  stars_count       Int      @default(0)
+  forks_count       Int      @default(0)
+  open_issues_count Int      @default(0)
+  topics            String[] @default([])
+  is_fork           Boolean  @default(false)
+  is_private        Boolean  @default(false)
   last_pushed_at    DateTime?
 
   userId            String?
-  user              User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   contributions     Contribution[]
   recommendedRepos  RecommendedRepo[]
   fetchHistory      RepoFetchHistory[]
   userRepoStats     UserRepoStat[]
 
-  @@unique([userId])
-
+  @@index([userId])
 }
+
 
 model Contribution {
   id              String     @id @default(uuid())

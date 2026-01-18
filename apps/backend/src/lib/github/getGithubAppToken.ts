@@ -8,7 +8,7 @@ import { createAppAuth } from "@octokit/auth-app";
 //   "utf8"
 // );
 
-const privateKey = process.env.GITHUB_PRIVATE_KEY!.replace(/\\n/g, "\n");
+const privateKey = process.env.PRIVATE_KEY!.replace(/\\n/g, "\n");
 
 console.log(
   process.env.GITHUB_APP_ID,
