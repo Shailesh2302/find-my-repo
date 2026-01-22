@@ -1,55 +1,44 @@
-# OSSBeat
+# OSSBeat - Open Source Repository Discovery Platform
 
-One Platform. Every Open Source Opportunity.
+OSSBeat is a comprehensive platform that helps developers discover suitable open-source repositories, track their contributions, and get mentorship for programs like Google Summer of Code (GSoC). The platform provides personalized repository recommendations based on user profiles and contribution history.
 
-OSSBeat is a comprehensive platform designed to help developers discover suitable open-source repositories, track their contributions, build strong fundamentals, and get expert mentorship for programs like Google Summer of Code (GSoC). It provides personalized repository recommendations, contribution analytics, and a seamless experience for open-source engagement.
+## ✨ Features
 
-## 🚀 Features
+- 🔍 **Repository Discovery**: Find OSS repositories that match your skills and interests
+- 👥 **GitHub Integration**: Seamless OAuth authentication with GitHub
+- 📊 **Contribution Tracking**: Monitor your open-source contributions and statistics
+- 🎯 **Personalized Recommendations**: AI-powered repository suggestions based on your profile
+- 📈 **Progress Analytics**: Visualize your open-source journey and growth
+- 🏆 **GSoC Preparation**: Get expert mentorship and guidance for Google Summer of Code
+- 🌙 **Dark Mode**: Modern UI with theme switching capabilities
 
-- **Repository Discovery**: Advanced filtering and search for open-source projects by language, stars, forks, topics, and more
-- **Personalized Recommendations**: AI-powered suggestions based on user interests and contribution history
-- **Contribution Tracking**: Comprehensive analytics for commits, pull requests, and issues across repositories
-- **GitHub Integration**: Seamless OAuth authentication and webhook-based real-time updates
-- **User Statistics**: Detailed insights into open-source contributions and project engagement
-- **GSoC Preparation**: Tools and mentorship features to help developers prepare for Google Summer of Code
-- **Responsive Design**: Modern, mobile-first UI built with Tailwind CSS
+## 🏗️ Architecture
 
-## 🛠 Tech Stack
+OSSBeat follows a modern monorepo architecture using Turborepo:
 
-### Frontend
-- **Framework**: [Next.js 16](https://nextjs.org/) with App Router
-- **Language**: TypeScript
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) with custom design system
-- **UI Components**: Radix UI primitives with custom components
-- **State Management**: React hooks and context
-- **HTTP Client**: Axios with authentication interceptors
+```
+ossbeat/
+├── apps/
+│   ├── web/          # Next.js frontend application
+│   └── backend/      # Express.js API server
+├── packages/
+│   ├── database/     # Prisma database client & migrations
+│   ├── ui/           # Shared React components
+│   ├── eslint-config/# ESLint configurations
+│   └── typescript-config/ # TypeScript configurations
+└── turbo.json        # Turborepo configuration
+```
 
-### Backend
-- **Runtime**: Node.js with Express.js
-- **Language**: TypeScript
-- **Database**: PostgreSQL with [Prisma ORM](https://www.prisma.io/)
-- **Authentication**: JWT tokens with GitHub OAuth
-- **API**: RESTful endpoints with Zod validation
-- **Webhooks**: GitHub webhook processing for real-time updates
-
-### Infrastructure & DevOps
-- **Monorepo**: [Turborepo](https://turbo.build/) for efficient build orchestration
-- **Build Tools**: ESBuild for fast compilation
-- **Code Quality**: ESLint, Prettier, TypeScript strict mode
-- **Package Manager**: pnpm with workspace support
-
-## 🏗 Architecture
-
-### System Overview
+### System Architecture
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Next.js Web   │    │  Express API    │    │   PostgreSQL    │
-│   (Port 3000)   │◄──►│   (Port 4000)   │◄──►│   Database      │
+│   Frontend      │◄──►│   Backend       │◄──►│   Database      │
 │                 │    │                 │    │                 │
-│ - React SPA     │    │ - REST API      │    │ - Users         │
-│ - Auth Flow     │    │ - GitHub OAuth  │    │ - Repositories  │
-│ - Dashboard     │    │ - Webhooks      │    │ - Contributions │
+│ - React 19      │    │ - TypeScript    │    │ - Prisma ORM    │
+│ - Tailwind CSS  │    │ - JWT Auth      │    │ - User data     │
+│ - Theme support │    │ - GitHub OAuth  │    │ - Repositories  │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          └───────────────────────┼───────────────────────┘
@@ -58,130 +47,196 @@ OSSBeat is a comprehensive platform designed to help developers discover suitabl
                     │   GitHub API    │
                     │                 │
                     │ - OAuth         │
-                    │ - Webhooks      │
-                    │ - Repository    │
-                    │   Data          │
+                    │ - Repository data│
+                    │ - User profiles │
                     └─────────────────┘
 ```
-
-### Data Flow
-
-1. **Authentication**: Users authenticate via GitHub OAuth through the backend API
-2. **Data Sync**: GitHub webhooks trigger real-time updates of repository and contribution data
-3. **Discovery**: Frontend queries the API for repository recommendations and user statistics
-4. **Analytics**: Background jobs process contribution data and generate insights
-
-## 📁 Project Structure
-
-```
-ossbeat/
-├── apps/
-│   ├── web/                    # Next.js frontend application
-│   │   ├── app/                # Next.js app router pages
-│   │   │   ├── (home)/         # Landing page routes
-│   │   │   ├── (app)/          # Authenticated app routes
-│   │   │   │   └── repo/       # Repository-related pages
-│   │   │   └── layout.tsx      # Root layout
-│   │   ├── components/         # React components
-│   │   │   ├── home/           # Landing page components
-│   │   │   ├── ui/             # Reusable UI components
-│   │   │   └── web/            # Web-specific components
-│   │   ├── lib/                # Utility libraries
-│   │   ├── types/              # TypeScript type definitions
-│   │   └── utils/              # Helper functions
-│   └── backend/                # Express.js API server
-│       ├── src/
-│       │   ├── index.ts        # Server entry point
-│       │   ├── modules/        # Feature modules
-│       │   │   ├── auth/       # Authentication logic
-│       │   │   ├── repo/       # Repository management
-│       │   │   ├── user/       # User management
-│       │   │   └── hook/       # GitHub webhook handlers
-│       │   ├── middleware/     # Express middleware
-│       │   ├── utils/          # Utility functions
-│       │   └── types/          # Type definitions
-│       └── package.json
-├── packages/
-│   ├── database/               # Prisma database package
-│   │   ├── prisma/
-│   │   │   ├── schema.prisma   # Database schema
-│   │   │   └── migrations/     # Database migrations
-│   │   └── src/                # Database client
-│   ├── ui/                     # Shared UI component library
-│   ├── eslint-config/          # ESLint configurations
-│   ├── typescript-config/      # TypeScript configurations
-│   └── tailwind-config/        # Tailwind CSS configurations
-├── package.json                # Root package.json
-├── turbo.json                  # Turborepo configuration
-└── README.md                   # This file
-```
-
-## 🔧 System Design
-
-### Database Schema
-
-The application uses PostgreSQL with the following core entities:
-
-- **Users**: GitHub-authenticated users with profile information
-- **Providers**: OAuth provider connections (GitHub, Google)
-- **Repositories**: GitHub repository metadata and statistics
-- **Contributions**: User contributions to repositories (commits, PRs, issues)
-- **UserRepoStats**: Aggregated statistics per user-repository pair
-- **RecommendedRepos**: AI-generated repository recommendations
-- **RefreshTokens**: JWT refresh token storage
-
-### API Design
-
-RESTful API endpoints organized by resource:
-
-```
-GET    /health              # Health check
-POST   /auth/github         # GitHub OAuth initiation
-GET    /auth/github/callback # OAuth callback
-GET    /user/profile        # User profile data
-GET    /repo/discover       # Repository discovery with pagination
-GET    /repo/:id/stats      # Repository statistics
-POST   /github/webhook      # GitHub webhook endpoint
-```
-
-### Authentication Flow
-
-1. User clicks "Login with GitHub" → Redirected to GitHub OAuth
-2. GitHub redirects back with authorization code
-3. Backend exchanges code for access token
-4. JWT tokens generated and stored in HTTP-only cookies
-5. Frontend receives authentication state
-
-### Webhook Processing
-
-GitHub webhooks trigger real-time updates:
-- Push events → Update repository metadata
-- Pull request events → Track contributions
-- Issue events → Update issue counts
-- Repository events → Sync repository changes
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
-- pnpm 8+
-- PostgreSQL 13+
-- GitHub OAuth App (for authentication)
+- **Node.js** 18+ ([Download here](https://nodejs.org/))
+- **pnpm** package manager ([Install guide](https://pnpm.io/installation))
+- **PostgreSQL** database ([Install guide](https://www.postgresql.org/download/))
+- **GitHub OAuth App** ([Create here](https://github.com/settings/applications/new))
+
+### Environment Variables
+
+Create the following environment files:
+
+#### Root `.env`
+
+```bash
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/ossbeat"
+```
+
+#### Backend `.env` (apps/backend/.env)
+
+```bash
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/ossbeat"
+
+# GitHub OAuth
+GITHUB_CLIENT_ID="your_github_client_id"
+GITHUB_CLIENT_SECRET="your_github_client_secret"
+GITHUB_REDIRECT_URI="http://localhost:4000/auth/github/callback"
+
+# Frontend URL
+FRONTEND_URL="http://localhost:3000"
+
+# Environment
+NODE_ENV="development"
+```
+
+#### Frontend `.env.local` (apps/web/.env.local)
+
+```bash
+# API URL
+NEXT_PUBLIC_API_URL="http://localhost:4000"
+```
+>>>>>>> 348b7bc (docs: add comprehensive environment variables documentation to README)
 
 ### Installation
 
 1. **Clone the repository**
+<<<<<<< HEAD
    ```bash
    git clone https://github.com/your-org/ossbeat.git
    cd ossbeat
    ```
 
 2. **Install dependencies**
+=======
+
+   ```bash
+=======
+# OSSBeat - Open Source Repository Discovery Platform
+
+OSSBeat is a comprehensive platform that helps developers discover suitable open-source repositories, track their contributions, and get mentorship for programs like Google Summer of Code (GSoC). The platform provides personalized repository recommendations based on user profiles and contribution history.
+
+## ✨ Features
+
+- 🔍 **Repository Discovery**: Find OSS repositories that match your skills and interests
+- 👥 **GitHub Integration**: Seamless OAuth authentication with GitHub
+- 📊 **Contribution Tracking**: Monitor your open-source contributions and statistics
+- 🎯 **Personalized Recommendations**: AI-powered repository suggestions based on your profile
+- 📈 **Progress Analytics**: Visualize your open-source journey and growth
+- 🏆 **GSoC Preparation**: Get expert mentorship and guidance for Google Summer of Code
+- 🌙 **Dark Mode**: Modern UI with theme switching capabilities
+
+## 🏗️ Architecture
+
+OSSBeat follows a modern monorepo architecture using Turborepo:
+
+```
+ossbeat/
+├── apps/
+│   ├── web/          # Next.js frontend application
+│   └── backend/      # Express.js API server
+├── packages/
+│   ├── database/     # Prisma database client & migrations
+│   ├── ui/           # Shared React components
+│   ├── eslint-config/# ESLint configurations
+│   └── typescript-config/ # TypeScript configurations
+└── turbo.json        # Turborepo configuration
+```
+
+### System Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Next.js Web   │    │  Express API    │    │   PostgreSQL    │
+│   Frontend      │◄──►│   Backend       │◄──►│   Database      │
+│                 │    │                 │    │                 │
+│ - React 19      │    │ - TypeScript    │    │ - Prisma ORM    │
+│ - Tailwind CSS  │    │ - JWT Auth      │    │ - User data     │
+│ - Theme support │    │ - GitHub OAuth  │    │ - Repositories  │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         └───────────────────────┼───────────────────────┘
+                                 │
+                    ┌─────────────────┐
+                    │   GitHub API    │
+                    │                 │
+                    │ - OAuth         │
+                    │ - Repository data│
+                    │ - User profiles │
+                    └─────────────────┘
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** 18+ ([Download here](https://nodejs.org/))
+- **pnpm** package manager ([Install guide](https://pnpm.io/installation))
+- **PostgreSQL** database ([Install guide](https://www.postgresql.org/download/))
+- **GitHub OAuth App** ([Create here](https://github.com/settings/applications/new))
+
+### Environment Variables
+
+Create the following environment files:
+
+#### Root `.env`
+
+```bash
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/ossbeat"
+```
+
+#### Backend `.env` (apps/backend/.env)
+
+```bash
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/ossbeat"
+
+# GitHub OAuth
+GITHUB_CLIENT_ID="your_github_client_id"
+GITHUB_CLIENT_SECRET="your_github_client_secret"
+GITHUB_REDIRECT_URI="http://localhost:4000/auth/github/callback"
+
+# Frontend URL
+FRONTEND_URL="http://localhost:3000"
+
+# Environment
+NODE_ENV="development"
+```
+
+#### Frontend `.env.local` (apps/web/.env.local)
+
+```bash
+# API URL
+NEXT_PUBLIC_API_URL="http://localhost:4000"
+```
+>>>>>>> 348b7bc (docs: add comprehensive environment variables documentation to README)
+
+### Installation
+
+1. **Clone the repository**
+<<<<<<< HEAD
+   ```bash
+   git clone https://github.com/your-org/ossbeat.git
+   cd ossbeat
+   ```
+
+2. **Install dependencies**
+=======
+
+   ```bash
+   git clone https://github.com/Shailesh2302/OSSBeat.git
+   cd OSSBeat
+   ```
+
+2. **Install dependencies**
+
+>>>>>>> 348b7bc (docs: add comprehensive environment variables documentation to README)
    ```bash
    pnpm install
    ```
 
+<<<<<<< HEAD
 3. **Set up environment variables**
 
    Create `.env` in the root directory:
@@ -196,6 +251,10 @@ GitHub webhooks trigger real-time updates:
    ```
 
 4. **Set up the database**
+=======
+3. **Set up the database**
+
+>>>>>>> 348b7bc (docs: add comprehensive environment variables documentation to README)
    ```bash
    # Generate Prisma client
    pnpm db:generate
@@ -204,12 +263,18 @@ GitHub webhooks trigger real-time updates:
    pnpm db:migrate
    ```
 
+<<<<<<< HEAD
 5. **Start development servers**
+=======
+4. **Start development servers**
+
+>>>>>>> 348b7bc (docs: add comprehensive environment variables documentation to README)
    ```bash
    # Start all services
    pnpm dev
 
    # Or start individually:
+<<<<<<< HEAD
    # pnpm --filter web dev      # Frontend on :3000
    # pnpm --filter backend dev  # Backend on :4000
    ```
@@ -290,6 +355,200 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 - **ESLint**: Configured with Next.js and React rules
 - **Prettier**: Code formatting with Tailwind plugin
 - **Husky**: Pre-commit hooks for quality checks
+=======
+   pnpm --filter web dev      # Frontend on http://localhost:3000
+   pnpm --filter backend dev  # Backend on http://localhost:4000
+   ```
+
+5. **Open your browser**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:4000
+
+## 📁 Project Structure
+
+```
+ossbeat/
+├── apps/
+│   ├── backend/
+│   │   ├── src/
+│   │   │   ├── config/        # Environment configuration
+│   │   │   ├── middleware/    # Express middleware
+│   │   │   ├── modules/       # Feature modules
+│   │   │   │   ├── auth/      # Authentication logic
+│   │   │   │   ├── repo/      # Repository management
+│   │   │   │   ├── user/      # User management
+│   │   │   │   └── hook/      # GitHub webhooks
+│   │   │   ├── types/         # TypeScript type definitions
+│   │   │   ├── utils/         # Utility functions
+│   │   │   └── index.ts       # Server entry point
+│   │   └── package.json
+│   └── web/
+│       ├── app/               # Next.js app router
+│       ├── components/        # React components
+│       ├── lib/               # Utility libraries
+│       ├── types/             # TypeScript types
+│       └── utils/             # Helper functions
+├── packages/
+│   ├── database/
+│   │   ├── prisma/
+│   │   │   ├── schema.prisma  # Database schema
+│   │   │   └── migrations/    # Database migrations
+│   │   └── src/
+│   │       ├── client.ts      # Prisma client
+│   │       └── index.ts
+│   ├── ui/                    # Shared UI components
+│   ├── eslint-config/         # ESLint configurations
+│   └── typescript-config/     # TypeScript configurations
+├── package.json
+├── turbo.json                 # Turborepo configuration
+└── README.md
+```
+
+## 🗄️ Database Schema
+
+The application uses PostgreSQL with Prisma ORM. Key models include:
+
+- **User**: User profiles and authentication data
+- **Provider**: OAuth provider information (GitHub)
+- **Repository**: GitHub repository data
+- **Contribution**: User contributions to repositories
+- **UserRepoStat**: User statistics per repository
+- **RecommendedRepo**: AI-powered repository recommendations
+- **RefreshToken**: JWT refresh token storage
+
+## 🔐 Authentication Flow
+
+1. User clicks "Login with GitHub"
+2. Redirected to GitHub OAuth authorization
+3. GitHub redirects back with authorization code
+4. Backend exchanges code for access token
+5. User profile data fetched from GitHub API
+6. JWT tokens generated and stored
+7. User redirected to dashboard
+
+## 📡 API Documentation
+
+### Authentication Endpoints
+
+- `POST /auth/github` - Initiate GitHub OAuth login
+- `POST /auth/github/callback` - Handle OAuth callback
+- `POST /auth/refresh` - Refresh JWT tokens
+- `POST /auth/logout` - Logout user
+
+### Repository Endpoints
+
+- `GET /repo/discover` - Discover repositories with pagination
+- `GET /repo/:id` - Get repository details
+- `POST /repo/track` - Start tracking a repository
+- `DELETE /repo/:id/track` - Stop tracking repository
+
+### User Endpoints
+
+- `GET /user/profile` - Get user profile
+- `PUT /user/profile` - Update user profile
+- `GET /user/stats` - Get user contribution statistics
+- `GET /user/repositories` - Get user's tracked repositories
+
+## 🛠️ Development
+
+### Available Scripts
+
+```bash
+# Development
+pnpm dev                    # Start all development servers
+pnpm build                  # Build all packages and apps
+pnpm lint                   # Run ESLint
+pnpm check-types           # Run TypeScript type checking
+
+# Database
+pnpm db:generate           # Generate Prisma client
+pnpm db:migrate            # Run database migrations
+pnpm db:deploy             # Deploy migrations to production
+pnpm db:studio             # Open Prisma Studio
+
+# Individual services
+pnpm --filter web dev      # Start web app only
+pnpm --filter backend dev  # Start backend only
+```
+
+### Code Quality
+
+- **ESLint**: Configured with Next.js and React rules
+- **Prettier**: Code formatting
+- **TypeScript**: Strict type checking enabled
+- **Husky**: Pre-commit hooks for code quality
+
+## 🚢 Deployment
+
+### Backend Deployment
+
+```bash
+# Build the backend
+pnpm --filter backend build
+
+# The built files will be in apps/backend/dist/
+```
+
+### Frontend Deployment
+
+```bash
+# Build the web app
+pnpm --filter web build
+
+# The built files will be in apps/web/.next/
+```
+
+### Environment Setup for Production
+
+Ensure all production environment variables are set:
+
+```bash
+# Database
+DATABASE_URL="postgresql://user:pass@host:5432/db"
+
+# GitHub OAuth (Production App)
+GITHUB_CLIENT_ID="prod_client_id"
+GITHUB_CLIENT_SECRET="prod_client_secret"
+GITHUB_REDIRECT_URI="https://yourdomain.com/auth/github/callback"
+
+# Frontend
+FRONTEND_URL="https://yourdomain.com"
+
+# Environment
+NODE_ENV="production"
+```
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes** and test thoroughly
+4. **Commit your changes**: `git commit -m 'feat: add amazing feature'`
+5. **Push to the branch**: `git push origin feature/amazing-feature`
+6. **Open a Pull Request**
+
+### Commit Convention
+
+We follow [Conventional Commits](https://conventionalcommits.org/):
+
+- `feat:` New features
+- `fix:` Bug fixes
+- `docs:` Documentation changes
+- `style:` Code style changes
+- `refactor:` Code refactoring
+- `test:` Adding tests
+- `chore:` Maintenance tasks
+
+### Development Guidelines
+
+- Write clear, concise commit messages
+- Test your changes before submitting
+- Update documentation for API changes
+- Follow the existing code style
+- Use TypeScript for type safety
+>>>>>>> 348b7bc (docs: add comprehensive environment variables documentation to README)
 
 ## 📄 License
 
@@ -297,11 +556,25 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
+<<<<<<< HEAD
 - [Turborepo](https://turbo.build/) for the monorepo tooling
 - [Next.js](https://nextjs.org/) for the React framework
 - [Prisma](https://www.prisma.io/) for the database ORM
 - [Tailwind CSS](https://tailwindcss.com/) for the styling system
 - [GitHub](https://github.com/) for the platform and APIs
+=======
+- [Turborepo](https://turborepo.com/) for the monorepo tooling
+- [Next.js](https://nextjs.org/) for the React framework
+- [Prisma](https://prisma.io/) for the database ORM
+- [Tailwind CSS](https://tailwindcss.com/) for styling
+- [GitHub](https://github.com/) for the OAuth and API services
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/Shailesh2302/OSSBeat/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Shailesh2302/OSSBeat/discussions)
+- **Email**: For business inquiries or partnerships
+>>>>>>> 348b7bc (docs: add comprehensive environment variables documentation to README)
 
 ---
 
