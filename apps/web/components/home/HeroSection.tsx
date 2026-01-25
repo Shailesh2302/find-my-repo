@@ -41,8 +41,11 @@ export const HeroSection = () => {
           </div>
         </div>
         <div className="flex justify-center items-center">
-          <Button className=" flex flex-row bg-secondary-100 mt-6 p-2 px-4 text-xl text-foreground items-center">
-            <Link href="/repo" className="flex justify-center items-center gap-2">
+          <Button className=" flex flex-row bg-secondary-100 mt-6 px-5 py-5 shadow-accent-100 md:text-md lg:text-lg text-foreground hover:bg-foreground-950 items-center">
+            <Link
+              href="/dashboard/home"
+              className="flex justify-center items-center gap-2"
+            >
               <GithubIcon />
               Get Started
             </Link>

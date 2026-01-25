@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Repo } from "@/types/repoTypes";
 import { axiosPublicInstance } from "@/utils/axios-public";
+import Image from "next/image";
 
 const MAJOR_TOPIC_LIMIT = 12;
 
@@ -103,7 +104,7 @@ export default function DiscoverPage() {
 
   if (loading && repos.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b0f14] text-white">
+      <div className="min-h-screen flex items-center justify-center bg-background text-white">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white" />
       </div>
     );
@@ -112,7 +113,7 @@ export default function DiscoverPage() {
   /* ---------------- UI ---------------- */
 
   return (
-    <div className="min-h-screen bg-[#0b0f14] text-white">
+    <div className="min-h-screen bg-background text-white">
       <div className="max-w-7xl mx-auto px-6 py-10">
         {/* ================= TOP OSS HEADER ================= */}
         <div className="mb-10">
@@ -160,7 +161,7 @@ export default function DiscoverPage() {
                 onChange={(e) =>
                   setFilters({ ...filters, language: e.target.value })
                 }
-                className="h-10 px-4 rounded-lg bg-black/40 border border-white/10 text-sm hover:border-white/20"
+                className="h-10 px-4 rounded-lg bg-background-50 border border-white/10 text-sm hover:border-white/20"
               >
                 <option value="all">All Languages</option>
                 {languages.map((l) => (
@@ -204,7 +205,7 @@ export default function DiscoverPage() {
                   className={`px-3 py-1.5 rounded-full text-xs border transition ${
                     active
                       ? "bg-blue-600 border-blue-500"
-                      : "bg-black/40 border-white/10 text-white/60 hover:bg-white/10"
+                      : "bg-black/40 border-white/10 text-white/60 hover:bg-foreground-950"
                   }`}
                 >
                   #{topic}
@@ -222,11 +223,13 @@ export default function DiscoverPage() {
               href={r.html_url}
               target="_blank"
               rel="noreferrer"
-              className="group rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent hover:border-white/20 hover:bg-white/[0.06] transition"
+              className="group rounded-xl border border-foreground-950 bg-gradient-to-b from-white/[0.04] to-transparent hover:border-white/20 hover:bg-white/[0.06] transition"
             >
               <div className="p-4 flex flex-col h-full">
                 <div className="flex gap-3">
-                  <img
+                  <Image
+                  width={8}
+                  height={8}
                     src={r.owner_avatar_url}
                     alt={r.owner_login}
                     className="h-10 w-10 rounded-lg object-cover"
@@ -267,7 +270,7 @@ export default function DiscoverPage() {
             <button
               onClick={() => loadRepos(true)}
               disabled={loading}
-              className="px-6 py-2 rounded-md bg-white/10 hover:bg-white/20 text-sm"
+              className="px-6 py-2 rounded-md bg-white/10 hover:bg-foreground-900 text-sm"
             >
               {loading ? "Loading…" : "Load more"}
             </button>
