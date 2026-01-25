@@ -1,4 +1,3 @@
-
 import Navbar from "@/components/dashboard/Navbar";
 import Link from "next/link";
 
@@ -8,16 +7,16 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-screen flex flex-col bg-background text-foreground-50">
       {/* Header */}
-      <header className="h-14 border-b flex items-center justify-center">
-        header
+      <header className="h-14 border-b border-white/10 flex items-center px-6 shrink-0">
+        Header
       </header>
 
       {/* Body */}
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-1/5 min-w-[220px] border-r p-4">
+        <aside className="w-64 border-r border-foreground-950 p-4 shrink-0">
           <Navbar />
         </aside>
 
