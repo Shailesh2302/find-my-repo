@@ -1,9 +1,13 @@
 export function mapGithubRepo(repo: any) {
   return {
     github_repo_id: repo.id,
+
     owner_login: repo.owner.login,
     owner_id: Number(repo.owner.id),
     owner_profile_url: repo.owner.url,
+
+    // 🔥 THIS WAS THE BUG
+    owner_avatar_url: repo.owner.avatarUrl,
 
     name: repo.name,
     full_name: repo.nameWithOwner,
@@ -21,13 +25,9 @@ export function mapGithubRepo(repo: any) {
 
     topics:
       repo.repositoryTopics?.nodes.map(
-        (n: { topic: { name: string } }) => n.topic.name
+        (n: { topic: { name: string } }) => n.topic.name,
       ) ?? [],
 
     last_pushed_at: repo.pushedAt,
   };
-}
-
-interface Topic {
-  name: string | undefined;
 }

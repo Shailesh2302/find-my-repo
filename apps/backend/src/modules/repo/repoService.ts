@@ -33,7 +33,9 @@ const SEARCH_REPOS_QUERY = `
           owner {
             login
             url
+            avatarUrl 
           }
+
           issues(states: OPEN) {
             totalCount
           }
@@ -42,6 +44,7 @@ const SEARCH_REPOS_QUERY = `
     }
   }
 `;
+
 
 function buildSearchQuery({
   language,

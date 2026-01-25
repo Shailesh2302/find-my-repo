@@ -9,4 +9,6 @@ export interface Repo {
   open_issues_count: number;
   last_pushed_at: string;
   topics: string[];
+  owner_login: string;
+  owner_avatar_url: string;
 }

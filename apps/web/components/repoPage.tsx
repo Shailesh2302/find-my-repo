@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-export default function RepoHomePage() {
+export default function RepoPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -8,7 +8,7 @@ interface OnButtonProps {
   className?: string;
 }
 
-const OnButton = ({ onSubmit, className }: OnButtonProps) => {
+export const OnButtonChange = ({ onSubmit, className }: OnButtonProps) => {
   return (
     <div className="flex pt-6 flex-wrap justify-center items-center gap-2 md:flex-row">
       <Button
@@ -23,4 +23,16 @@ const OnButton = ({ onSubmit, className }: OnButtonProps) => {
   );
 };
 
-export default OnButton;
+export const OnButton = () => {
+  return (
+    <div className="flex pt-6 flex-wrap justify-center items-center gap-2 md:flex-row">
+      <Button
+        variant="default"
+        className={`bg-background hover:bg-background-800 px-8 text-foreground-100`}
+      >
+        <GithubIcon />
+        Get Started
+      </Button>
+    </div>
+  );
+};

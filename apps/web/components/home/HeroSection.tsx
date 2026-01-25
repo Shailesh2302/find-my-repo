@@ -1,25 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "../ui/button";
-import OnButton from "../web/Button";
+
+import { OnButton } from "../web/Button";
+import { GithubIcon } from "lucide-react";
 import OpenSourceJourneyChart from "./OpenSourceJourneyChart";
 import RunningDog from "./RunningDog";
+import { Button } from "@/components/ui/button";
 import Navbar from "./Navbar";
+import Link from "next/link";
 
 export const HeroSection = () => {
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    setLoading(true);
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/github`;
-  };
+  // const handleLogin = () => {
+  //   setLoading(true);
+  //   window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/github`;
+  // };
   return (
     <section
       className="flex items-start justify-center min-h-screen
       bg-linear-to-b from-foreground from-30% via-gray-500 via-50% to-background to-75%"
     >
-      <Navbar/> 
+      <Navbar />
       <main className="w-full">
         <div className="flex flex-col pt-40 gap-6 justify-center items-center">
           <h1 className="text-background text-4xl  text-shadow-2xs md:text-5xl lg:text-6xl font-extrabold text-center">
@@ -37,11 +40,18 @@ export const HeroSection = () => {
             </h5>
           </div>
         </div>
-        <OnButton onSubmit={handleLogin} />
+        <div className="flex justify-center items-center">
+          <Button className=" flex flex-row bg-secondary-100 mt-6 p-2 px-4 text-xl text-foreground items-center">
+            <Link href="/repo" className="flex justify-center items-center gap-2">
+              <GithubIcon />
+              Get Started
+            </Link>
+          </Button>
+        </div>
         <div className="pt-45">
-        <RunningDog/>
-      <OpenSourceJourneyChart />
-      </div>
+          <RunningDog />
+          <OpenSourceJourneyChart />
+        </div>
       </main>
     </section>
   );
